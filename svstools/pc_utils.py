@@ -5,6 +5,9 @@ import open3d as o3d
 def points2PointCloud(points):
     """ Convert numpy point cloud to Open3D point cloud
     """
+    if isinstance(points, o3d.geometry.PointCloud):
+        return points
+
     pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(points[..., 0:3])
     if points.shape[-1] > 3:
@@ -204,3 +207,51 @@ def rotate(vect, degree, axis='z', about=[0,0,0]):
     vect[:, :3] = pts
 
     return vect
+
+
+def euclidean_clustering(points, threshold, search_size, size_threshold=None, return_outliers=False):
+    """Returns list of clusters
+    TODO: Update code
+    """
+    clusters = []
+    pcd = points2PointCloud(points)
+    pcd_tree = o3d.geometry.KDTreeFlann(pcd)
+    P = np.asarray(pcd.points)
+    P_unprocessed = np.ones((len(P),), dtype=np.bool)
+
+    empty_list = np.zeros((len(P),), dtype=np.bool)
+
+    while P_unprocessed.sum() > search_size:
+
+        Q = empty_list.copy()
+        p_i = np.where(P_unprocessed)[0][0] # Get the next unprocessed index
+        Q[p_i] = True
+
+        while True:
+            unprocessed_Q = np.logical_and(Q, P_unprocessed)
+            if not unprocessed_Q.any():
+                break
+
+            q_i = np.where(unprocessed_Q)[0][0]  # Get the next unprocessed index in the queue
+            P_unprocessed[q_i] = False  # Set the index as processed
+
+            # Search neighbors of the currently processing index
+            k, neig, _ = pcd_tree.search_radius_vector_3d(P[q_i], threshold)
+            Q[neig] = True
+
+        # Append the list of indices of the queue into clusters
+        clusters.append(np.where(Q)[0])
+
+    # Remove cluster whose sizes are smaller than the size_threshold
+    if size_threshold:
+        for i in np.arange(len(clusters))[::-1]:
+            c = clusters[i]
+            if len(c) < size_threshold:
+                P_unprocessed[c] = True
+                del clusters[i]
+
+    if return_outliers:
+        outliers = np.where(P_unprocessed)[0]
+        return clusters, outliers
+
+    return clusters
