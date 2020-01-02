@@ -50,7 +50,7 @@ def draw_cylinder(pt1, pt2, radi, color):
     half_length = np.linalg.norm(diff)
     unit_diff = diff / half_length
 
-    R = utils.get_rotation_matrix([0, 0, 1], unit_diff)
+    R = pc_utils.get_rotation_matrix([0, 0, 1], unit_diff)
 
     tf = np.eye(4)
     tf[:3, :3] = R
@@ -78,7 +78,7 @@ def get_default_arrow(scale=1):
 def draw_arrow(point, normal, color, arrow_params):
     """ Draw a unit arrow at given point towards the normal direction.
     """
-    rotation = utils.get_rotation_matrix([0, 0, 1], normal)
+    rotation = pc_utils.get_rotation_matrix([0, 0, 1], normal)
 
     transformation = np.eye(4)
     transformation[:3, :3] = rotation

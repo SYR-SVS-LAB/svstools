@@ -105,7 +105,7 @@ def get_rotation_matrix(init, target):
     b = target
 
     v = np.cross(a, b)       # Rotation axis
-    s = np.linalg.norm(v)   # sine of angle
+    s = np.linalg.norm(v)    # sine of angle
     c = np.dot(a, b)         # cosine of angle
 
     v_x = np.array([
@@ -255,3 +255,34 @@ def euclidean_clustering(points, threshold, search_size, size_threshold=None, re
         return clusters, outliers
 
     return clusters
+
+def project_pointcloud(pc, plane):
+    """Project a 3D point cloud onto the defined 2D plane.
+
+    Arguments:
+        pc {array} -- Nx3 point cloud array
+        plane {array or list} -- Coefficients of plane equation ax + by + cz + d = 0
+
+    Returns:
+        array -- Nx3 projected point cloud
+    """
+    plane_normal = np.array(plane[:3], dtype=np.float32).reshape(3, 1)
+
+    projection_distance = (pc.dot(plane_normal) + plane[-1]) / np.linalg.norm(plane_normal)
+    proj_v = projection_distance.dot(plane_normal.reshape(1, 3))
+    projection = pc - proj_v
+
+    return projection
+
+def point2plane_distance(point, plane, keepdims=False):
+    point, plane = np.array(point).reshape(-1, 3), np.array(plane).reshape(4, 1)
+    point = np.hstack((point, [[1]]*len(point)))
+
+    d = point.dot(plane) / np.linalg.norm(plane[:3])
+
+    if not keepdims:
+        d = d.reshape(-1)
+        if len(d) == 1:
+            d = d[0]
+
+    return d
