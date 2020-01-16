@@ -208,8 +208,41 @@ def rotate(vect, degree, axis='z', about=[0,0,0]):
 
     return vect
 
+def get_normals(points, knn=None, radius=None):
+    """Calculate normals of the given point cloud
+    If only radius is given, search method is radius based.
+    If only knn is given, search method is KNN based.
+    If both are given, search method is hybrid.
+    
+    Arguments:
+        points {array or PointCloud} -- Input point cloud
+    
+    Keyword Arguments:
+        knn {int} -- K of K-Nearest Neighbor algorithm (default: {None})
+        radius {float} -- Search radius (default: {None})
+    
+    Returns:
+        array or PointCloud -- Output is array of normals if the input is points array,
+        or it is PointCloud with normals if the input is PointCloud.
+    """
+    assert not (radius is None and knn is None)
+    if knn is None:
+        method = o3d.geometry.KDTreeSearchParamRadius(radius=radius)
+    elif radius is None:
+        method = o3d.geometry.KDTreeSearchParamKNN(knn=knn)
+    else:
+        method = o3d.geometry.KDTreeSearchParamHybrid(max_nn=knn, radius=radius)
+    
+    pcd = points2PointCloud(points)
+    pcd.estimate_normals(method)
 
-def euclidean_clustering(points, threshold, search_size, size_threshold=None, return_outliers=False):
+    if isinstance(points, o3d.geometry.PointCloud):
+        return pcd
+    
+    return np.asarray(pcd.normals)
+
+
+def euclidean_clustering(points, threshold, search_size, size_threshold=None, return_outliers=False, condition=None):
     """Returns list of clusters
     TODO: Update code
     """
@@ -237,6 +270,8 @@ def euclidean_clustering(points, threshold, search_size, size_threshold=None, re
 
             # Search neighbors of the currently processing index
             k, neig, _ = pcd_tree.search_radius_vector_3d(P[q_i], threshold)
+            if condition is not None:
+                neig = condition(pcd, q_i, neig)
             Q[neig] = True
 
         # Append the list of indices of the queue into clusters
