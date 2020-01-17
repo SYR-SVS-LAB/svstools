@@ -242,7 +242,7 @@ def get_normals(points, knn=None, radius=None):
     return np.asarray(pcd.normals)
 
 
-def euclidean_clustering(points, threshold, search_size, size_threshold=None, return_outliers=False, condition=None):
+def euclidean_clustering(points, threshold, search_size, valid_indices=None, size_threshold=None, return_outliers=False, condition=None):
     """Returns list of clusters
     TODO: Update code
     """
@@ -250,7 +250,11 @@ def euclidean_clustering(points, threshold, search_size, size_threshold=None, re
     pcd = points2PointCloud(points)
     pcd_tree = o3d.geometry.KDTreeFlann(pcd)
     P = np.asarray(pcd.points)
-    P_unprocessed = np.ones((len(P),), dtype=np.bool)
+    if valid_indices is None:
+        P_unprocessed = np.ones((len(P),), dtype=np.bool)
+    else:
+        P_unprocessed = np.zeros((len(P),), dtype=np.bool)
+        P_unprocessed[valid_indices] = True
 
     empty_list = np.zeros((len(P),), dtype=np.bool)
 
