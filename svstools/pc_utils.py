@@ -246,21 +246,20 @@ def euclidean_clustering(points, threshold, search_size, valid_indices=None, siz
     """Returns list of clusters
     TODO: Update code
     """
-    clusters = []
-    pcd = points2PointCloud(points)
+    if valid_indices is None:
+        pcd = points2PointCloud(points)
+    else:
+        pcd = points2PointCloud(points[valid_indices])
     pcd_tree = o3d.geometry.KDTreeFlann(pcd)
     P = np.asarray(pcd.points)
-    if valid_indices is None:
-        P_unprocessed = np.ones((len(P),), dtype=np.bool)
-    else:
-        P_unprocessed = np.zeros((len(P),), dtype=np.bool)
-        P_unprocessed[valid_indices] = True
+    P_unprocessed = np.ones((len(P),), dtype=np.bool)
 
-    empty_list = np.zeros((len(P),), dtype=np.bool)
+    empty_list_template = np.zeros((len(P),), dtype=np.bool)
 
+    clusters = []
     while P_unprocessed.sum() > search_size:
 
-        Q = empty_list.copy()
+        Q = empty_list_template.copy()
         p_i = np.where(P_unprocessed)[0][0] # Get the next unprocessed index
         Q[p_i] = True
 
@@ -288,6 +287,10 @@ def euclidean_clustering(points, threshold, search_size, valid_indices=None, siz
             if len(c) < size_threshold:
                 P_unprocessed[c] = True
                 del clusters[i]
+
+    # Fix cluster indices
+    if valid_indices is not None:
+        clusters = [valid_indices[c] for c in clusters]
 
     if return_outliers:
         outliers = np.where(P_unprocessed)[0]
