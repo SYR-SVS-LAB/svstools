@@ -246,10 +246,9 @@ def euclidean_clustering(points, threshold, search_size, valid_indices=None, siz
     """Returns list of clusters
     TODO: Update code
     """
-    if valid_indices is None:
-        pcd = points2PointCloud(points)
-    else:
-        pcd = points2PointCloud(points[valid_indices])
+    pcd = points2PointCloud(points)
+    if valid_indices is not None:
+        pcd = pcd.select_down_sample(valid_indices)
     pcd_tree = o3d.geometry.KDTreeFlann(pcd)
     P = np.asarray(pcd.points)
     P_unprocessed = np.ones((len(P),), dtype=np.bool)
