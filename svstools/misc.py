@@ -1,9 +1,10 @@
+"""Miscellaneous utilities.
+"""
+
 import os
-import sys
 import json
 import time
 import requests
-import numpy as np
 
 class Timeit:
     '''
@@ -13,19 +14,20 @@ class Timeit:
         # code here
         # code here
         # code here
-    
+
     output:
     Code block  'my code block' took 67.0860 ms
     '''
-    def __init__(self, name=None):
+    def __init__(self, name=None, callback=None):
         self.name = "'"  + name + "'" if name else ''
+        self.callback = print if callback is None else callback
 
     def __enter__(self):
         self.start = time.clock()
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.took = (time.clock() - self.start) * 1000.0
-        print('Code block %s took %.4f ms' % (self.name, self.took))
+        took = (time.clock() - self.start) * 1000.0
+        self.callback('Code block %s took %.4f ms' % (self.name, took))
 
 def join_path(*args):
     return os.path.join(*args)
