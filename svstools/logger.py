@@ -100,7 +100,7 @@ def setup_global_logger(name=None, level=None, logpath="diary.log"):
     logger = logging.getLogger(GLOBAL_LOGGER_NAME)
     logger.setLevel(level)
 
-    fmt = '[%(asctime)s] %(levelname)-7s | (%(_module)s:%(_lineno)d): %(message)s'
+    fmt = '[%(asctime)s] %(levelname)-7s (%(_module)s:%(_lineno)d): %(message)s'
     formatter = logging.Formatter(fmt=fmt)
 
     if logpath is not None:

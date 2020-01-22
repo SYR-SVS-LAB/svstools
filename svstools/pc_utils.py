@@ -293,6 +293,7 @@ def euclidean_clustering(points, threshold, search_size, valid_indices=None, siz
 
     if return_outliers:
         outliers = np.where(P_unprocessed)[0]
+        outliers = valid_indices[outliers] # Fix indices
         return clusters, outliers
 
     return clusters
