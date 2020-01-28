@@ -23,8 +23,6 @@ setuptools.setup(
         "matplotlib",
         "tqdm",
         "requests",
-        "open3d>=0.8",
-        "opencv-python==4.1.0.25",
-        "opencv-contrib-python==4.1.0.25",
+        "open3d>=0.9"
     ]
 )
