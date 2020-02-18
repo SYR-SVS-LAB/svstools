@@ -23,10 +23,10 @@ class Timeit:
         self.callback = print if callback is None else callback
 
     def __enter__(self):
-        self.start = time.clock()
+        self.start = time.time()
 
     def __exit__(self, exc_type, exc_value, traceback):
-        took = (time.clock() - self.start) * 1000.0
+        took = (time.time() - self.start) * 1000.0
         self.callback('Code block %s took %.4f ms' % (self.name, took))
 
 def join_path(*args):
