@@ -242,6 +242,28 @@ def get_normals(points, knn=None, radius=None):
     return np.asarray(pcd.normals)
 
 
+def orient_normals(normals, view_point):
+    """Orient normals towards the given view point
+    
+    Parameters
+    ----------
+    normals : array
+        Nx3 Normals
+    view_point : array or list
+        3D coordinates of the viewpoint
+    
+    Returns
+    -------
+    array
+        Nx3 oriented normals
+    """
+    view_point = np.array(view_point).reshape(3, 1)
+    val = np.diag(normals.dot(view_point - normals.T))
+    
+    signs = (val > 0).astype(int)*2 - 1
+    return -signs.reshape(-1, 1)*normals
+
+
 def euclidean_clustering(points, threshold, search_size, valid_indices=None, size_threshold=None, return_outliers=False, condition=None):
     """Returns list of clusters
     TODO: Update code

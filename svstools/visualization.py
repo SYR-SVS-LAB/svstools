@@ -21,7 +21,7 @@ def show_pointcloud(pcd, geometries=None, coordinate_frame=None):
         geometries.append(pcd)
     else:
         geometries = [pcd]
-    
+
     if coordinate_frame:
         cf = o3d.geometry.TriangleMesh.create_coordinate_frame(
         size=coordinate_frame[0], origin=coordinate_frame[1])
@@ -86,13 +86,13 @@ def draw_arrow(point, normal, color, arrow_params):
     arrow = o3d.geometry.TriangleMesh.create_arrow(**arrow_params)
     arrow.transform(transformation)
     arrow.paint_uniform_color(color)
-    
+
     return arrow
 
 def draw_normal_surface(pcd, scale, estimation_params=None):
     """Draw and return a mesh of arrows of normal vectors for each point
        in the given cloud
-    
+
     Parameters
     ----------
     pcd : o3d.geometry.PointCloud
@@ -101,13 +101,13 @@ def draw_normal_surface(pcd, scale, estimation_params=None):
         Scale of the default arrow which is 1 meter length
     estimation_params : dict, optional
         Normal estimatino parameters if input does not contain normals, by default None
-    
+
     Returns
     -------
     o3d.geometry.TriangleMesh
         Collection of normal arrows as a single triangle mesh
     """
-    
+
     if len(pcd.normals) != len(pcd.points):
         pcd.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(**estimation_params))
 
@@ -156,7 +156,7 @@ def draw_bbox(bbox, color=[1, 0, 0]):
 
 def paint_colormap(pcd, values, cmap='hsv', density=1024):
     """Paint the given point cloud based on the values array
-    
+
     Parameters
     ----------
     pcd : open3d.geometry.PointCloud
@@ -168,7 +168,7 @@ def paint_colormap(pcd, values, cmap='hsv', density=1024):
         Colormap specifier (matplotlib color schemes), by default 'hsv'
     density : int, optional
         Resolution factor of color scheme, by default 1024
-    
+
     Returns
     -------
     open3d.geometry.PointCloud
