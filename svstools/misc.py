@@ -33,15 +33,16 @@ def join_path(*args):
     return os.path.join(*args)
 
 
-def slack_message(message, webhook_file="/home/burak/.local/slack_wh.txt"):
+def slack_message(message, webhook_file="%s/.local/slack_wh.txt"%(os.environ["HOME"]), url=None):
     """Sends notification to Slack webhook.
     Webook address should be defined in webhook_file as a single line.
 
     Arguments:
         message {[type]} -- [description]
     """
-    with open(webhook_file) as f:
-        url = f.readline().strip()
+    if url is None:
+        with open(webhook_file) as url_file:
+            url = url_file.readline().strip()
     if isinstance(message, str):
         message = json.dumps({"text": message})
     elif not isinstance(message, dict):
