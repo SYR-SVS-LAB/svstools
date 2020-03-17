@@ -159,7 +159,7 @@ def paint_colormap(pcd, values, cmap='hsv', density=1024):
 
     Parameters
     ----------
-    pcd : open3d.geometry.PointCloud
+    pcd : open3d.geometry.PointCloud or numpy array
         Input point cloud
     values : np.ndarray
         Nx1 array of the values of which each point is painted based on.
@@ -171,9 +171,13 @@ def paint_colormap(pcd, values, cmap='hsv', density=1024):
 
     Returns
     -------
-    open3d.geometry.PointCloud
+    open3d.geometry.PointCloud or numpy array
         Painted point cloud
     """
+    is_np_array = not isinstance(pcd, o3d.geometry.PointCloud)
+    if is_np_array:
+        pcd = pc_utils.points2PointCloud(pcd)
+
     cmap = cm.get_cmap(cmap, density)
 
     # Normalize into 0-1024
@@ -185,6 +189,8 @@ def paint_colormap(pcd, values, cmap='hsv', density=1024):
 
     colors = np.asarray([cmap(v)[:3] for v in values])
     pcd.colors = o3d.utility.Vector3dVector(colors)
+    if is_np_array:
+        pcd = pc_utils.pointCloud2Points(pcd)
 
     return pcd
 
