@@ -5,6 +5,7 @@ import os
 import json
 import time
 import requests
+import functools
 
 class Timeit:
     '''
@@ -28,6 +29,17 @@ class Timeit:
     def __exit__(self, exc_type, exc_value, traceback):
         took = (time.time() - self.start) * 1000.0
         self.callback('Code block %s took %.4f ms' % (self.name, took))
+
+def timeit(name=None):
+    """ Timeit decorator.
+    """
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            with Timeit(name):
+                func(*args, **kwargs)
+        return wrapper
+    return decorator
 
 def join_path(*args):
     return os.path.join(*args)
