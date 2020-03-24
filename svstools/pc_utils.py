@@ -92,7 +92,7 @@ def get_rotation_matrix(init, target):
     ----------
     init : list or numpy array
         Initial unit vector
-    target list or numpy array
+    target : list or numpy array
         Target unit vector
 
     Returns

@@ -21,14 +21,17 @@ class Timeit:
     '''
     def __init__(self, name=None, callback=None):
         self.name = "'"  + name + "'" if name else ''
-        self.callback = print if callback is None else callback
+        if callback is None:
+            self.callback = lambda e, n: print('Code block %s took %.4f ms' % (n, e))
+        else:
+            self.callback = callback
 
     def __enter__(self):
         self.start = time.time()
 
     def __exit__(self, exc_type, exc_value, traceback):
-        took = (time.time() - self.start) * 1000.0
-        self.callback('Code block %s took %.4f ms' % (self.name, took))
+        elapsed = (time.time() - self.start) * 1000.0
+        self.callback(elapsed, self.name)
 
 def timeit(name=None):
     """ Timeit decorator.
