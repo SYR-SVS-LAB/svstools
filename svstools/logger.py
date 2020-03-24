@@ -98,7 +98,6 @@ def setup_global_logger(name=None, level=None, logpath="diary.log"):
         level = logging.DEBUG
 
     logger = logging.getLogger(GLOBAL_LOGGER_NAME)
-    logger.setLevel(level)
 
     fmt = '[%(asctime)s] %(levelname)-7s (%(_module)s:%(_lineno)d): %(message)s'
     formatter = logging.Formatter(fmt=fmt)
@@ -113,6 +112,7 @@ def setup_global_logger(name=None, level=None, logpath="diary.log"):
     # Add specific handlers
     shandler = logging.StreamHandler()
     shandler.setFormatter(formatter)
+    shandler.setLevel(level)
     logger.addHandler(shandler)
 
     if level == logging.DEBUG:
