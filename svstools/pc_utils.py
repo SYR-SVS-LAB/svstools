@@ -1,4 +1,3 @@
-
 import numpy as np
 import open3d as o3d
 
@@ -107,6 +106,7 @@ def get_rotation_matrix(init, target):
     v = np.cross(a, b)       # Rotation axis
     s = np.linalg.norm(v)    # sine of angle
     c = np.dot(a, b)         # cosine of angle
+    v = v/s
 
     v_x = np.array([
         [0, -v[2], v[1]],
