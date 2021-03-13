@@ -27,7 +27,7 @@ def show_pointcloud(pcd, geometries=None, coordinate_frame=None):
         size=coordinate_frame[0], origin=coordinate_frame[1])
         geometries.append(cf)
 
-    o3d.visualization.draw_geometries(geometries)
+    o3d.visualization.draw_geometries(geometries, left=1000, top=1000)
 
 
 def draw_sphere(center, radius, color=[1, 0, 0]):
@@ -194,6 +194,24 @@ def paint_colormap(pcd, values, cmap='hsv', density=1024):
 
     return pcd
 
+def get_palette(N, cmap='hsv'):
+    """Return a color pallet
+
+    Parameters
+    ----------
+    N : int
+        Number of distinct colors
+    cmap : str, optional
+        Target pallet, by default 'hsv'
+
+    Returns
+    -------
+    list
+        List of distinct colors
+    """
+
+    colors = [get_color(i, N) for i in range(N)]
+    return colors
 
 def get_color(i, N=255):
     """Return a unique color among given number of colors

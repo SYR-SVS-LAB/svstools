@@ -26,7 +26,7 @@ def pointCloud2Points(pointCloud):
     return pc
 
 
-def crop_bbox(pc, bbox, return_outliers=False):
+def crop_bbox(pc, bbox, return_outliers=False, margin=0.0):
     """Crop the point cloud to given bounding box.
 
     Parameters
@@ -37,6 +37,8 @@ def crop_bbox(pc, bbox, return_outliers=False):
         6 element list of bounding box: [xmin, xmax, ymin, ymax, zmin, zmax]
     return_outliers : bool, optional
         If True, return the outlier indices too, by default False
+    margin : float, optional
+        Bounding box margin percentage. 0.1 margin adds %10 to each dimension.
 
     Returns
     -------
@@ -46,18 +48,23 @@ def crop_bbox(pc, bbox, return_outliers=False):
     """
 
     bbox = np.array(bbox).reshape((3, 2))
+
+    if margin != 0:
+        bbox_center = bbox.mean(axis=-1).reshape(3, 1)
+        bbox = (bbox - bbox_center) * (1+margin) + bbox_center
+
     filt = np.logical_and.reduce((
         pc[:, 0] >= bbox[0, 0],
-        pc[:, 0] <= bbox[0, 1],
+        pc[:, 0] <  bbox[0, 1],
         pc[:, 1] >= bbox[1, 0],
-        pc[:, 1] <= bbox[1, 1],
+        pc[:, 1] <  bbox[1, 1],
         pc[:, 2] >= bbox[2, 0],
-        pc[:, 2] <= bbox[2, 1],
+        pc[:, 2] <  bbox[2, 1],
     ))
     inliers = np.where(filt)[0]
-    outliers = np.where(np.logical_not(filt))[0]
 
     if return_outliers:
+        outliers = np.where(np.logical_not(filt))[0]
         return inliers, outliers
 
     return inliers
@@ -242,7 +249,7 @@ def get_normals(points, knn=None, radius=None):
     return np.asarray(pcd.normals)
 
 
-def orient_normals(normals, view_point):
+def orient_normals(normals, points, view_point):
     """Orient normals towards the given view point
     
     Parameters
@@ -257,8 +264,8 @@ def orient_normals(normals, view_point):
     array
         Nx3 oriented normals
     """
-    view_point = np.array(view_point).reshape(3, 1)
-    val = np.diag(normals.dot(view_point - normals.T))
+    view_point = np.array(view_point).reshape(1, 3)
+    val = np.sum(normals * (view_point - points), axis=-1)
     
     signs = (val > 0).astype(int)*2 - 1
     return -signs.reshape(-1, 1)*normals
