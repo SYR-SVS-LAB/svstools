@@ -77,7 +77,7 @@ def get_level_from_env():
 
     return level
 
-def setup_global_logger(name=None, level=None, logpath="diary.log"):
+def setup_global_logger(name=None, level=None, logpath=None):
     """Initialize global logger
 
     Parameters
@@ -98,7 +98,7 @@ def setup_global_logger(name=None, level=None, logpath="diary.log"):
         level = logging.DEBUG
 
     logger = logging.getLogger(GLOBAL_LOGGER_NAME)
-    logger.setLevel(level)
+    logger.setLevel(logging.DEBUG)
 
     fmt = '[%(asctime)s] %(levelname)-7s (%(_module)s:%(_lineno)d): %(message)s'
     formatter = logging.Formatter(fmt=fmt)
@@ -106,17 +106,14 @@ def setup_global_logger(name=None, level=None, logpath="diary.log"):
     if logpath is not None:
         fhandler = logging.FileHandler(logpath)
         fhandler.setFormatter(formatter)
-        fhandler.setLevel(logging.DEBUG)
         logger.addHandler(fhandler)
 
-    # colored_formatter = ColoredFormatter(formatter_message(fmt, True))
+    colored_formatter = ColoredFormatter(formatter_message(fmt, True))
     # Add specific handlers
     shandler = logging.StreamHandler()
-    shandler.setFormatter(formatter)
+    shandler.setFormatter(colored_formatter)
+    shandler.setLevel(level)
     logger.addHandler(shandler)
-
-    if level == logging.DEBUG:
-        debug("Log level is set to DEBUG.")
 
 def common_meta(**kwargs):
     """Common meta setter
