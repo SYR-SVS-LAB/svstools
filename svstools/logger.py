@@ -77,7 +77,7 @@ def get_level_from_env():
 
     return level
 
-def setup_global_logger(name=None, level=None, logpath=None):
+def setup_global_logger(name=None, level=None, logpath=None, stdout=True):
     """Initialize global logger
 
     Parameters
@@ -104,16 +104,17 @@ def setup_global_logger(name=None, level=None, logpath=None):
     formatter = logging.Formatter(fmt=fmt)
 
     if logpath is not None:
+        os.makedirs(os.path.dirname(logpath), exist_ok=True)
         fhandler = logging.FileHandler(logpath)
         fhandler.setFormatter(formatter)
         logger.addHandler(fhandler)
-
-    colored_formatter = ColoredFormatter(formatter_message(fmt, True))
-    # Add specific handlers
-    shandler = logging.StreamHandler()
-    shandler.setFormatter(colored_formatter)
-    shandler.setLevel(level)
-    logger.addHandler(shandler)
+    
+    if stdout:
+        shandler = logging.StreamHandler()
+        colored_formatter = ColoredFormatter(formatter_message(fmt, True))
+        shandler.setFormatter(colored_formatter)
+        shandler.setLevel(level)
+        logger.addHandler(shandler)
 
 def common_meta(**kwargs):
     """Common meta setter
