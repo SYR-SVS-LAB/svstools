@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="svstools",
-    version="0.1",
+    version="0.2.1",
     author="Burak Kakillioglu",
-    author_email="jason.tyan@sri.com",
-    description="Smart Vision Systems Lab miscelleneous utility and visualization tools",
+    author_email="bkakilli@syr.edu",
+    description="Smart Vision Systems Lab miscellaneous utility and visualization tools",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    # url="https://github.com/pypa/sampleproject",
+    url="https://github.com/SYR-SVS-LAB/svstools",
     packages=['svstools'],
     classifiers=[
         "Programming Language :: Python :: 3",
